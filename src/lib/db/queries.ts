@@ -31,8 +31,9 @@ export async function getFeed(limit = 60): Promise<FeedItem[]> {
 
 export async function getRoutes(): Promise<Route[]> {
   return knex('routes')
-    .select('id', 'slug', 'title', 'kind', 'length_km', 'elevation_m', 'description', 'settlement_id')
-    .orderBy('sort_order')
+    .where({ is_published: true })
+    .select('id', 'slug', 'title', 'kind', 'length_km', 'elevation_m', 'description', 'source_url', 'settlement_id')
+    .orderBy([{ column: 'sort_order' }, { column: 'id' }])
 }
 
 export async function getPlaces(): Promise<Place[]> {

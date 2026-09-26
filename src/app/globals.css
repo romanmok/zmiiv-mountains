@@ -71,3 +71,63 @@
 .pin:focus-visible text {
   text-decoration: underline;
 }
+
+/* Admin forms */
+@layer components {
+  .adm-input {
+    width: 100%;
+    border: 2px solid var(--color-ink);
+    border-radius: 12px;
+    background: #fff;
+    padding: 9px 12px;
+    font-size: 15px;
+    line-height: 1.4;
+  }
+  .adm-input:disabled {
+    background: var(--color-soft);
+  }
+  .adm-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 2px solid var(--color-ink);
+    border-radius: 999px;
+    background: var(--color-ink);
+    color: var(--color-paper);
+    padding: 7px 16px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .adm-btn:hover {
+    background: var(--color-serpent);
+    border-color: var(--color-serpent);
+  }
+  .adm-btn:disabled {
+    opacity: 0.55;
+    cursor: default;
+  }
+  .adm-btn-ghost {
+    background: transparent;
+    color: var(--color-ink);
+  }
+  .adm-btn-ghost:hover {
+    background: var(--color-soft);
+    border-color: var(--color-ink);
+  }
+  .adm-btn-danger {
+    background: transparent;
+    color: var(--color-brick);
+    border-color: var(--color-brick);
+  }
+  .adm-btn-danger:hover {
+    background: var(--color-brick);
+    border-color: var(--color-brick);
+    color: var(--color-paper);
+  }
+  .adm-btn-sm {
+    padding: 3px 11px;
+    font-size: 13px;
+  }
+}

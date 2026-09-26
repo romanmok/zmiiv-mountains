@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto'
 import { knex } from '../knex'
 import { feedDriver } from './feed'
 import { telegramDriver } from './telegram'
-import { checkEntry, detectSettlement, type SettlementKeywords } from './filters'
+import { checkEntry, detectSettlement, parseKeywords, type FilterRules, type SettlementKeywords } from './filters'
 import { excerpt } from './text'
 import type { Driver, SourceRow, SourceType } from './types'
 
@@ -22,11 +22,26 @@ export interface CollectStats {
 
 const toSqlDate = (d: Date) => (isNaN(d.getTime()) ? new Date() : d).toISOString().slice(0, 19).replace('T', ' ')
 
-export async function collectAll(): Promise<CollectStats[]> {
-  const settlements: SettlementKeywords[] = (await knex('settlements').select('id', 'keywords').orderBy('sort_order')).map(
-    (s: { id: number; keywords: string }) => ({ id: s.id, keywords: s.keywords.split(',').map((k) => k.trim()) }),
-  )
-  const sources: SourceRow[] = await knex('sources').where({ enabled: true })
+export async function loadSettlementKeywords(): Promise<SettlementKeywords[]> {
+  const rows: { id: number; keywords: string }[] = await knex('settlements').select('id', 'keywords').orderBy('sort_order')
+  return rows.map((s) => ({ id: s.id, keywords: parseKeywords(s.keywords) }))
+}
+
+export async function loadFilterRules(): Promise<FilterRules> {
+  const words: { kind: 'safety' | 'noise'; word: string }[] = await knex('filter_words').select('kind', 'word')
+  const phones = await knex('settings').where({ key: 'filter_block_phones' }).first()
+  return {
+    safety: words.filter((w) => w.kind === 'safety').map((w) => w.word),
+    noise: words.filter((w) => w.kind === 'noise').map((w) => w.word),
+    blockPhones: phones ? phones.value !== '0' : true,
+  }
+}
+
+/** Collect all enabled sources, or only the given ones (enabled or not, for "collect now" in the admin). */
+export async function collectAll(onlyIds?: number[]): Promise<CollectStats[]> {
+  const [settlements, rules] = await Promise.all([loadSettlementKeywords(), loadFilterRules()])
+  const q = knex('sources')
+  const sources: SourceRow[] = onlyIds ? await q.whereIn('id', onlyIds) : await q.where({ enabled: true })
   const stats: CollectStats[] = []
 
   for (const source of sources) {
@@ -36,11 +51,9 @@ export async function collectAll(): Promise<CollectStats[]> {
       st.fetched = entries.length
       for (const e of entries) {
         const full = `${e.title}\n${e.text}`
-        const verdict = checkEntry(full, Boolean(source.require_keyword), settlements)
-        if (!verdict.ok) {
-          st.skipped[verdict.reason] = (st.skipped[verdict.reason] ?? 0) + 1
-          continue
-        }
+        const verdict = checkEntry(full, Boolean(source.require_keyword), settlements, rules)
+        // Filtered entries are stored too (never shown) so the moderator can see and rescue false positives
+        const status = !verdict.ok ? 'filtered' : source.premoderate ? 'pending' : 'published'
         const inserted = await knex('items')
           .insert({
             source_id: source.id,
@@ -51,11 +64,14 @@ export async function collectAll(): Promise<CollectStats[]> {
             url_hash: createHash('sha256').update(e.url).digest('hex'),
             thumb_url: e.thumbUrl ?? null,
             published_at: toSqlDate(e.publishedAt),
+            status,
+            filter_reason: verdict.ok ? null : verdict.match ? `${verdict.reason}:${verdict.match}`.slice(0, 32) : verdict.reason,
           })
           .onConflict('url_hash')
           .ignore()
-        if (inserted[0]) st.inserted++
-        else st.skipped.duplicate = (st.skipped.duplicate ?? 0) + 1
+        if (!inserted[0]) st.skipped.duplicate = (st.skipped.duplicate ?? 0) + 1
+        else if (!verdict.ok) st.skipped[verdict.reason] = (st.skipped[verdict.reason] ?? 0) + 1
+        else st.inserted++
       }
       await knex('sources').where({ id: source.id }).update({ last_fetched_at: knex.fn.now(), last_error: null })
     } catch (err) {

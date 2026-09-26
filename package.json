@@ -15,9 +15,11 @@
     "cron:once": "tsx scripts/cron.ts --once",
     "db:up": "docker compose up -d mariadb",
     "db:down": "docker compose down",
-    "test": "vitest run"
+    "test": "vitest run",
+    "add-admin": "tsx scripts/add-admin.ts"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "dotenv": "^18.0.4",
     "fast-xml-parser": "^5.11.1",
     "knex": "^3.3.0",
@@ -25,7 +27,8 @@
     "next": "^16.3.6",
     "node-cron": "^4.6.0",
     "react": "^19.3.0",
-    "react-dom": "^19.3.0"
+    "react-dom": "^19.3.0",
+    "server-only": "^0.0.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",

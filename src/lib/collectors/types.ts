@@ -6,6 +6,7 @@ export interface SourceRow {
   type: SourceType
   url: string
   require_keyword: boolean
+  premoderate: boolean
   default_settlement_id: number | null
 }
 

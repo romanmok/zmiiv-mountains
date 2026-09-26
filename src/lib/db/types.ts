@@ -28,6 +28,7 @@ export interface Route {
   length_km: string | null
   elevation_m: number | null
   description: string | null
+  source_url: string | null
   settlement_id: number | null
 }
 

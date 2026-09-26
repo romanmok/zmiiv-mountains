@@ -6,6 +6,7 @@ loadEnv({ path: path.resolve(process.cwd(), '.env.local') })
 loadEnv({ path: path.resolve(process.cwd(), '.env') })
 
 import { knex } from '../src/lib/knex'
+import { DEFAULT_NOISE, DEFAULT_SAFETY } from '../src/lib/collectors/filters'
 
 // Map coordinates are in the schematic SVG viewBox 0 0 560 420 (see VillageMap).
 const SETTLEMENTS = [
@@ -105,6 +106,15 @@ async function main() {
 
     await trx('routes').insert(ROUTES.map(({ settlement, ...r }, i) => ({ ...r, settlement_id: settlementIds[settlement], sort_order: i })))
     await trx('places').insert(PLACES.map(({ settlement, ...p }, i) => ({ ...p, settlement_id: settlementIds[settlement], sort_order: i })))
+
+    // Stop-words: only on first seed, afterwards they belong to the admin (users/settings are never touched)
+    const [{ n }] = await trx('filter_words').count({ n: '*' })
+    if (Number(n) === 0) {
+      await trx('filter_words').insert([
+        ...DEFAULT_SAFETY.map((word) => ({ kind: 'safety', word })),
+        ...DEFAULT_NOISE.map((word) => ({ kind: 'noise', word })),
+      ])
+    }
   })
   console.log('Seed done')
 }

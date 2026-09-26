@@ -14,10 +14,19 @@ export interface FeedCard {
   isDemo: boolean
 }
 
+export interface ExplorerTexts {
+  heroTitle: string
+  heroLead: string
+  heroHint: string
+  feedTitle: string
+  routesTitle: string
+}
+
 interface Props {
   settlements: Settlement[]
   feed: FeedCard[]
   routes: Route[]
+  texts: ExplorerTexts
 }
 
 const ROUTE_KIND: Record<Route['kind'], string> = {
@@ -34,7 +43,7 @@ function routeMeta(r: Route): string | null {
 }
 
 /** Map + feed + routes: selecting a settlement filters both lists. */
-export function Explorer({ settlements, feed, routes }: Props) {
+export function Explorer({ settlements, feed, routes, texts }: Props) {
   const [selected, setSelected] = useState<number | null>(null)
   const byId = new Map(settlements.map((s) => [s.id, s]))
   const current = selected ? byId.get(selected) : undefined
@@ -47,11 +56,9 @@ export function Explorer({ settlements, feed, routes }: Props) {
     <>
       <div className="grid items-center gap-10 pt-6 pb-16 min-[900px]:grid-cols-[1fr_1.1fr]">
         <div>
-          <h1 className="text-[clamp(44px,7vw,96px)] font-black text-serpent">Зміїв і все довкола</h1>
-          <p className="mt-5 max-w-[40ch] text-[19px]">
-            Новини міста й сіл громади в одній стрічці та маршрути кручами й лісами над Дінцем.
-          </p>
-          <p className="mt-4 text-[15px] text-muted">Натисніть на село на мапі, щоб побачити лише його новини й маршрути.</p>
+          <h1 className="text-[clamp(44px,7vw,96px)] font-black text-serpent">{texts.heroTitle}</h1>
+          {texts.heroLead && <p className="mt-5 max-w-[40ch] text-[19px]">{texts.heroLead}</p>}
+          {texts.heroHint && <p className="mt-4 text-[15px] text-muted">{texts.heroHint}</p>}
         </div>
         <VillageMap settlements={settlements} selected={selected} onSelect={setSelected} />
       </div>
@@ -59,7 +66,7 @@ export function Explorer({ settlements, feed, routes }: Props) {
       <section id="feed" aria-labelledby="feed-h" className="pt-10 pb-18">
         <div className="mb-5 flex flex-wrap items-end justify-between gap-5">
           <h2 id="feed-h" className="text-[clamp(28px,4vw,44px)]">
-            Новини громади
+            {texts.feedTitle}
           </h2>
           <div className="text-[15px] text-muted" aria-live="polite">
             {current ? (
@@ -107,7 +114,7 @@ export function Explorer({ settlements, feed, routes }: Props) {
 
       <section id="routes" aria-labelledby="routes-h" className="pb-18">
         <h2 id="routes-h" className="mb-6 text-[clamp(28px,4vw,44px)]">
-          {current ? `Маршрути: ${current.name}` : 'Маршрути'}
+          {current ? `${texts.routesTitle}: ${current.name}` : texts.routesTitle}
         </h2>
         {shownRoutes.length > 0 ? (
           <ul className="grid gap-x-10 min-[600px]:grid-cols-2">
@@ -117,6 +124,11 @@ export function Explorer({ settlements, feed, routes }: Props) {
                 <span className="self-center text-sm font-bold text-brick">{ROUTE_KIND[r.kind]}</span>
                 {routeMeta(r) && <p className="col-span-full text-[15px] font-medium">{routeMeta(r)}</p>}
                 {r.description && <p className="col-span-full max-w-[48ch] text-base text-muted">{r.description}</p>}
+                {r.source_url && (
+                  <a href={r.source_url} target="_blank" rel="noopener noreferrer" className="col-span-full text-[15px] font-medium underline hover:text-brick">
+                    Докладніше про маршрут
+                  </a>
+                )}
               </li>
             ))}
           </ul>
