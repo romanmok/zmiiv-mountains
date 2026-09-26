@@ -1,0 +1,25 @@
+name: zmiiv-mountains
+
+services:
+  mariadb:
+    image: mariadb:11
+    container_name: zmiiv_mountains_mariadb
+    restart: unless-stopped
+    ports:
+      - "3310:3306"
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_dev_pw}
+      MARIADB_DATABASE: ${DB_NAME:-zmiiv_mountains}
+      MARIADB_USER: ${DB_USER:-zmiiv_mountains}
+      MARIADB_PASSWORD: ${DB_PASSWORD:-zmiiv_mountains_dev_pw}
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mariadb_data:

@@ -1,0 +1,131 @@
+'use client'
+
+import { useState } from 'react'
+import type { Route, Settlement } from '@/lib/db/types'
+import { VillageMap } from './VillageMap'
+
+export interface FeedCard {
+  id: number
+  title: string
+  url: string
+  settlementId: number | null
+  sourceName: string
+  dateLabel: string
+  isDemo: boolean
+}
+
+interface Props {
+  settlements: Settlement[]
+  feed: FeedCard[]
+  routes: Route[]
+}
+
+const ROUTE_KIND: Record<Route['kind'], string> = {
+  hike: 'Піший',
+  eco_trail: 'Екостежка',
+  bike: 'Велосипедний',
+  water: 'Водний',
+}
+
+function routeMeta(r: Route): string | null {
+  const parts = [r.length_km ? `${Number(r.length_km).toLocaleString('uk-UA')} км` : null, r.elevation_m ? `набір ${r.elevation_m} м` : null]
+  const meta = parts.filter(Boolean).join(', ')
+  return meta || null
+}
+
+/** Map + feed + routes: selecting a settlement filters both lists. */
+export function Explorer({ settlements, feed, routes }: Props) {
+  const [selected, setSelected] = useState<number | null>(null)
+  const byId = new Map(settlements.map((s) => [s.id, s]))
+  const current = selected ? byId.get(selected) : undefined
+
+  const items = selected ? feed.filter((i) => i.settlementId === selected) : feed
+  const shownRoutes = selected ? routes.filter((r) => r.settlement_id === selected) : routes
+  const hasDemo = feed.some((i) => i.isDemo)
+
+  return (
+    <>
+      <div className="grid items-center gap-10 pt-6 pb-16 min-[900px]:grid-cols-[1fr_1.1fr]">
+        <div>
+          <h1 className="text-[clamp(44px,7vw,96px)] font-black text-serpent">Зміїв і все довкола</h1>
+          <p className="mt-5 max-w-[40ch] text-[19px]">
+            Новини міста й сіл громади в одній стрічці та маршрути кручами й лісами над Дінцем.
+          </p>
+          <p className="mt-4 text-[15px] text-muted">Натисніть на село на мапі, щоб побачити лише його новини й маршрути.</p>
+        </div>
+        <VillageMap settlements={settlements} selected={selected} onSelect={setSelected} />
+      </div>
+
+      <section id="feed" aria-labelledby="feed-h" className="pt-10 pb-18">
+        <div className="mb-5 flex flex-wrap items-end justify-between gap-5">
+          <h2 id="feed-h" className="text-[clamp(28px,4vw,44px)]">
+            Новини громади
+          </h2>
+          <div className="text-[15px] text-muted" aria-live="polite">
+            {current ? (
+              <>
+                Показано: {current.name}
+                <button
+                  type="button"
+                  onClick={() => setSelected(null)}
+                  className="ml-1.5 cursor-pointer text-brick underline"
+                >
+                  Показати всі
+                </button>
+              </>
+            ) : (
+              'Показано всі населені пункти'
+            )}
+          </div>
+        </div>
+        {hasDemo && <p className="mb-3.5 text-[13px] text-muted">Демо-стрічка: джерела справжні, заголовки умовні.</p>}
+        {items.length > 0 ? (
+          <ul className="grid gap-4 min-[600px]:grid-cols-2 min-[900px]:grid-cols-3">
+            {items.map((i) => {
+              const place = i.settlementId ? byId.get(i.settlementId) : undefined
+              return (
+                <li key={i.id} className="flex flex-col gap-2.5 rounded-[18px] border-2 border-ink bg-white px-5 py-4.5">
+                  {place && <span className="self-start rounded-full bg-ochre px-2.5 py-0.5 text-[13px] font-bold">{place.name}</span>}
+                  <h3 className="font-sans text-lg leading-[1.35] font-bold tracking-normal">
+                    <a href={i.url} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                      {i.title}
+                    </a>
+                  </h3>
+                  <div className="mt-auto text-sm text-muted">
+                    {i.sourceName}, {i.dateLabel}
+                  </div>
+                </li>
+              )
+            })}
+          </ul>
+        ) : (
+          <p className="rounded-[18px] border-2 border-dashed border-muted p-6 text-muted">
+            Для цього села поки немає новин. Оберіть інше на мапі або покажіть усі.
+          </p>
+        )}
+      </section>
+
+      <section id="routes" aria-labelledby="routes-h" className="pb-18">
+        <h2 id="routes-h" className="mb-6 text-[clamp(28px,4vw,44px)]">
+          {current ? `Маршрути: ${current.name}` : 'Маршрути'}
+        </h2>
+        {shownRoutes.length > 0 ? (
+          <ul className="grid gap-x-10 min-[600px]:grid-cols-2">
+            {shownRoutes.map((r) => (
+              <li key={r.id} className="grid grid-cols-[1fr_auto] gap-x-5 gap-y-1 border-t-2 border-ink pt-4.5 pb-5.5">
+                <h3 className="text-[22px] font-bold">{r.title}</h3>
+                <span className="self-center text-sm font-bold text-brick">{ROUTE_KIND[r.kind]}</span>
+                {routeMeta(r) && <p className="col-span-full text-[15px] font-medium">{routeMeta(r)}</p>}
+                {r.description && <p className="col-span-full max-w-[48ch] text-base text-muted">{r.description}</p>}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="rounded-[18px] border-2 border-dashed border-muted p-6 text-muted">
+            Біля цього села маршрутів поки немає. Оберіть інше на мапі або покажіть усі.
+          </p>
+        )}
+      </section>
+    </>
+  )
+}

@@ -1,0 +1,73 @@
+@import 'tailwindcss';
+
+/* Tokens: documentation/design-context.md (prototype №3) */
+@theme {
+  --color-paper: #fff8ec;
+  --color-serpent: #2e6b3f;
+  --color-ochre: #e8b04a;
+  --color-brick: #b5452c;
+  --color-ink: #221e1a;
+  --color-soft: #f3e7cf;
+  --color-muted: #6b6155;
+  --color-river: #7fa7b5;
+  --color-forest: #cfd9b8;
+
+  --font-display: var(--font-unbounded), sans-serif;
+  --font-sans: var(--font-onest), system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-size: 17px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+  :focus-visible {
+    outline: 3px solid var(--color-brick);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+}
+
+/* Village map pins */
+.pin {
+  cursor: pointer;
+}
+.pin circle {
+  fill: var(--color-paper);
+  stroke: var(--color-ink);
+  stroke-width: 2.5;
+  transition: r 0.2s, fill 0.2s;
+}
+.pin text {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 700;
+  fill: var(--color-ink);
+}
+.pin.city circle {
+  fill: var(--color-ochre);
+}
+.pin[aria-pressed='true'] circle {
+  fill: var(--color-brick);
+  stroke: var(--color-brick);
+}
+.pin:hover circle,
+.pin:focus-visible circle {
+  r: 13;
+}
+.pin:focus {
+  outline: none;
+}
+.pin:focus-visible text {
+  text-decoration: underline;
+}

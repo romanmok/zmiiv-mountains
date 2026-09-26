@@ -1,0 +1,41 @@
+{
+  "name": "zmiiv-mountains",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "tsc --noEmit",
+    "migrate": "knex migrate:latest --knexfile knexfile.ts",
+    "migrate:make": "knex migrate:make --knexfile knexfile.ts",
+    "migrate:rollback": "knex migrate:rollback --knexfile knexfile.ts",
+    "seed": "tsx scripts/seed.ts",
+    "cron": "tsx scripts/cron.ts",
+    "cron:once": "tsx scripts/cron.ts --once",
+    "db:up": "docker compose up -d mariadb",
+    "db:down": "docker compose down",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "dotenv": "^18.0.4",
+    "fast-xml-parser": "^5.11.1",
+    "knex": "^3.3.0",
+    "mysql2": "^3.24.4",
+    "next": "^16.3.6",
+    "node-cron": "^4.6.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^22.20.4",
+    "@types/node-cron": "^3.0.11",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.2"
+  }
+}
