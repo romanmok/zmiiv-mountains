@@ -34,9 +34,9 @@ export default async function RoutePage({ params }: { params: Promise<{ slug: st
   ].filter(Boolean) as { label: string; value: string }[]
 
   return (
-    <>
+    <div className="flex min-h-dvh flex-col">
       <SiteHeader t={t} />
-      <main className="mx-auto max-w-[1160px] px-5 pb-20">
+      <main className="mx-auto w-full max-w-[1160px] flex-1 px-5 pb-20">
         <a href="/#routes" className="text-[15px] font-medium text-muted hover:text-brick">
           Усі маршрути
         </a>
@@ -72,6 +72,6 @@ export default async function RoutePage({ params }: { params: Promise<{ slug: st
         </article>
       </main>
       <SiteFooter t={t} />
-    </>
+    </div>
   )
 }

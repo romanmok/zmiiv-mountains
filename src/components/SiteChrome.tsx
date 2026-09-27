@@ -5,7 +5,7 @@ import type { SiteSettings } from '@/lib/settings'
 
 export function SiteHeader({ t }: { t: SiteSettings }) {
   return (
-    <header className="mx-auto max-w-[1160px] px-5">
+    <header className="mx-auto w-full max-w-[1160px] px-5">
       <div className="flex h-19 items-center justify-between">
         <a href="/" className="font-display text-xl font-black text-serpent no-underline">
           {t.site_name}
@@ -38,7 +38,13 @@ export function SiteFooter({ t }: { t: SiteSettings }) {
             </>
           )}
         </div>
-        <div>{t.footer_note}</div>
+        <div>
+          {t.footer_note}{' '}
+          Розробка:{' '}
+          <a href="https://green-flask.com.ua" target="_blank" rel="noopener noreferrer" className="underline hover:text-ochre">
+            Green Flask Studio
+          </a>
+        </div>
       </div>
     </footer>
   )
