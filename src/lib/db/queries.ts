@@ -1,5 +1,5 @@
 import { knex } from '../knex'
-import type { FeedItem, Place, Route, RouteDetail, Settlement } from './types'
+import type { FeedItem, Legend, Place, Route, RouteDetail, Settlement } from './types'
 
 export async function getSettlements(): Promise<Settlement[]> {
   return knex('settlements')
@@ -54,4 +54,10 @@ export async function getRouteBySlug(slug: string): Promise<RouteDetail | null> 
 
 export async function getPlaces(): Promise<Place[]> {
   return knex('places').select('id', 'slug', 'name', 'kind', 'description', 'attribution').orderBy('sort_order')
+}
+
+/** One published legend, a different random one on every request. */
+export async function getRandomLegend(): Promise<Legend | null> {
+  const row = await knex('legends').where({ is_published: true }).select('id', 'title', 'body', 'note').orderByRaw('RAND()').first()
+  return row ?? null
 }

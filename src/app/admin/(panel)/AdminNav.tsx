@@ -8,6 +8,7 @@ const NAV = [
   { href: '/admin/sources', label: 'Джерела' },
   { href: '/admin/filters', label: 'Фільтри' },
   { href: '/admin/routes', label: 'Маршрути' },
+  { href: '/admin/legends', label: 'Легенди' },
   { href: '/admin/settings', label: 'Тексти сайту' },
 ]
 

@@ -47,3 +47,10 @@ export interface Place {
   description: string | null
   attribution: string | null
 }
+
+export interface Legend {
+  id: number
+  title: string
+  body: string
+  note: string | null
+}

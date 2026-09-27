@@ -1,14 +1,21 @@
 import { Explorer } from '@/components/Explorer'
 import { SerpentLine } from '@/components/SerpentLine'
 import { SiteFooter, SiteHeader } from '@/components/SiteChrome'
-import { getPlaces, getRoutes, getSettlements } from '@/lib/db/queries'
+import { getPlaces, getRandomLegend, getRoutes, getSettlements } from '@/lib/db/queries'
 import { getFeedPage } from '@/lib/feed'
 import { getSiteSettings } from '@/lib/settings'
 
 export const dynamic = 'force-dynamic'
 
 export default async function HomePage() {
-  const [settlements, feed, routes, places, t] = await Promise.all([getSettlements(), getFeedPage(0, null), getRoutes(), getPlaces(), getSiteSettings()])
+  const [settlements, feed, routes, places, legend, t] = await Promise.all([
+    getSettlements(),
+    getFeedPage(0, null),
+    getRoutes(),
+    getPlaces(),
+    getRandomLegend(),
+    getSiteSettings(),
+  ])
 
   return (
     <div className="relative">
@@ -43,14 +50,15 @@ export default async function HomePage() {
             </div>
           </section>
 
-          {t.legend_text && (
+          {legend && (
             <section aria-labelledby="legend-h" className="mb-18">
               <div className="rounded-[28px] border-2 border-ink bg-soft px-7 py-9 min-[900px]:px-12">
+                <p className="mb-1.5 text-sm font-bold text-brick">Легенда краю</p>
                 <h2 id="legend-h" className="mb-4 text-[clamp(24px,3.2vw,36px)]">
-                  {t.legend_title}
+                  {legend.title}
                 </h2>
-                <p className="max-w-[60ch] text-lg">{t.legend_text}</p>
-                {t.legend_note && <p className="mt-3 max-w-[60ch] text-sm text-muted">{t.legend_note}</p>}
+                <p className="max-w-[60ch] text-lg whitespace-pre-line">{legend.body}</p>
+                {legend.note && <p className="mt-3 max-w-[60ch] text-sm text-muted">{legend.note}</p>}
               </div>
             </section>
           )}
