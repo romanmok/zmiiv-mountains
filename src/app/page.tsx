@@ -65,6 +65,18 @@ export default async function HomePage() {
             </div>
           </section>
 
+          {t.legend_text && (
+            <section aria-labelledby="legend-h" className="mb-18">
+              <div className="rounded-[28px] border-2 border-ink bg-soft px-7 py-9 min-[900px]:px-12">
+                <h2 id="legend-h" className="mb-4 text-[clamp(24px,3.2vw,36px)]">
+                  {t.legend_title}
+                </h2>
+                <p className="max-w-[60ch] text-lg">{t.legend_text}</p>
+                {t.legend_note && <p className="mt-3 max-w-[60ch] text-sm text-muted">{t.legend_note}</p>}
+              </div>
+            </section>
+          )}
+
           <section id="places" aria-labelledby="places-h" className="pb-20">
             <h2 id="places-h" className="mb-6 text-[clamp(28px,4vw,44px)]">
               {t.sections_places}

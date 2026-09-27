@@ -20,8 +20,8 @@ export const SETTING_GROUPS: SettingGroup[] = [
     id: 'site',
     label: 'Бренд і пошук',
     fields: [
-      // TODO: confirm final brand spelling with product owner («Змієві гори» vs «Зміївські гори»)
-      { key: 'site_name', label: 'Назва сайту (шапка, футер, вкладка браузера)', default: 'Зміївські гори' },
+      // «Змієві гори» — geographic term (Sobolev, Kariakin): the whole right bank of the Donets; confirmed by the product owner
+      { key: 'site_name', label: 'Назва сайту (шапка, футер, вкладка браузера)', default: 'Змієві гори' },
       { key: 'site_title_suffix', label: 'Підзаголовок вкладки на головній', default: 'Зміїв і села громади' },
       {
         key: 'site_description',
@@ -69,6 +69,26 @@ export const SETTING_GROUPS: SettingGroup[] = [
         key: 'story_p2',
         label: 'Другий абзац (можна лишити порожнім)',
         default: 'Справжня крейда виходить на поверхню найближче біля Геївки, на Шебелинці.',
+        multiline: true,
+      },
+    ],
+  },
+  {
+    id: 'legend',
+    label: 'Легенда (блок після історії)',
+    fields: [
+      { key: 'legend_title', label: 'Заголовок', default: 'Легенда про Змієві вали' },
+      {
+        key: 'legend_text',
+        label: 'Текст легенди (порожній — блок не показується)',
+        default:
+          'Старовинний переказ пояснює назви краю змієм: богатир переміг його, запріг у плуг і проорав борозну аж до моря, а з неї постали Змієві вали. Так пращури пояснювали й високий берег Дінця.',
+        multiline: true,
+      },
+      {
+        key: 'legend_note',
+        label: 'Примітка під легендою',
+        default: 'Це легенда, а не історія. Змієві гори — природний уступ плато, підрізаний Дінцем, і з валами вони не пов’язані.',
         multiline: true,
       },
     ],
