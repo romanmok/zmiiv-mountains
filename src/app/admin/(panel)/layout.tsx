@@ -22,7 +22,9 @@ export default async function PanelLayout({ children }: { children: React.ReactN
             <Link href="/" target="_blank" className="text-muted hover:text-brick">
               Відкрити сайт
             </Link>
-            <span className="text-muted">{user.displayName || user.username}</span>
+            <Link href="/admin/account" title="Обліковий запис, зміна пароля" className="text-muted hover:text-brick">
+              {user.displayName || user.username}
+            </Link>
             <form action={logoutAction}>
               <button type="submit" className="adm-btn adm-btn-ghost adm-btn-sm">
                 Вийти

@@ -8,7 +8,7 @@ export type ActionResult = { ok: true; message: string } | { ok: false; error: s
  * React 19 resets a form after its action finishes, which wipes what the admin typed when
  * validation fails. The reset is a native, cancelable event, so we just cancel it.
  */
-export function AdminForm(props: React.FormHTMLAttributes<HTMLFormElement> & { action: (fd: FormData) => void }) {
+export function AdminForm(props: React.ComponentProps<'form'> & { action: (fd: FormData) => void }) {
   return <form {...props} onReset={(e) => e.preventDefault()} />
 }
 

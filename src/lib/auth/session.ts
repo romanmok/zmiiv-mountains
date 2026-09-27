@@ -49,6 +49,14 @@ export async function destroySession() {
   store.delete(COOKIE)
 }
 
+/** Logs the user out everywhere except the current browser (after a password change). */
+export async function destroyOtherSessions(userId: number) {
+  const token = (await cookies()).get(COOKIE)?.value
+  const q = knex('sessions').where({ user_id: userId })
+  if (token) q.whereNot({ id: hashToken(token) })
+  await q.del()
+}
+
 export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {
   const token = (await cookies()).get(COOKIE)?.value
   if (!token) return null
