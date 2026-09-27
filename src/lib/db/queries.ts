@@ -1,5 +1,5 @@
 import { knex } from '../knex'
-import type { FeedItem, Place, Route, Settlement } from './types'
+import type { FeedItem, Place, Route, RouteDetail, Settlement } from './types'
 
 export async function getSettlements(): Promise<Settlement[]> {
   return knex('settlements')
@@ -37,8 +37,19 @@ export async function getFeed({ limit = 10, offset = 0, settlementId = null }: {
 export async function getRoutes(): Promise<Route[]> {
   return knex('routes')
     .where({ is_published: true })
-    .select('id', 'slug', 'title', 'kind', 'length_km', 'elevation_m', 'description', 'source_url', 'settlement_id')
+    .select('id', 'slug', 'title', 'kind', 'length_km', 'elevation_m', 'description', 'source_url', 'settlement_id', 'cover_url')
     .orderBy([{ column: 'sort_order' }, { column: 'id' }])
+}
+
+export async function getRouteBySlug(slug: string): Promise<RouteDetail | null> {
+  const row = await knex('routes as r')
+    .leftJoin('settlements as s', 's.id', 'r.settlement_id')
+    .where({ 'r.slug': slug, 'r.is_published': true })
+    .first(
+      'r.id', 'r.slug', 'r.title', 'r.kind', 'r.length_km', 'r.elevation_m', 'r.description', 'r.source_url', 'r.settlement_id',
+      'r.cover_url', 'r.body', 'r.updated_at', 's.name as settlement_name',
+    )
+  return row ?? null
 }
 
 export async function getPlaces(): Promise<Place[]> {

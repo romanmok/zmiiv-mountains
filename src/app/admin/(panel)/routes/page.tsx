@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { knex } from '@/lib/knex'
 import { moveRoute } from '../../_actions/routes'
 import { PageHead } from '../../_ui/Panel'
-import { ROUTE_KIND } from './kinds'
+import { ROUTE_KIND } from '@/lib/route-kind'
 
 interface Row {
   id: number

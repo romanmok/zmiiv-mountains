@@ -4,7 +4,9 @@ import { useActionState } from 'react'
 import { deleteRoute, saveRoute } from '../../../_actions/routes'
 import { AdminForm, ConfirmButton, Field, ResultNote, SubmitButton, type ActionResult } from '../../../_ui'
 import { Panel } from '../../../_ui/Panel'
-import { ROUTE_KIND } from '../kinds'
+import { ROUTE_KIND } from '@/lib/route-kind'
+import { BodyEditor } from './BodyEditor'
+import { CoverField } from './CoverField'
 
 export interface RouteValues {
   id: number
@@ -18,6 +20,8 @@ export interface RouteValues {
   source_url: string | null
   is_published: number | boolean
   sort_order: number
+  cover_url: string | null
+  body: string | null
 }
 
 export function RouteForm({ route, settlements, created }: { route: RouteValues | null; settlements: { id: number; name: string }[]; created: boolean }) {
@@ -62,8 +66,8 @@ export function RouteForm({ route, settlements, created }: { route: RouteValues 
             </Field>
           </div>
           <div className="mt-4 grid gap-4">
-            <Field label="Опис" hint="Одне-два речення: що побачите і чим маршрут особливий.">
-              <textarea name="description" defaultValue={route?.description ?? ''} rows={4} className="adm-input resize-y" />
+            <Field label="Короткий опис" hint="Одне-два речення для картки на головній і вступу на сторінці маршруту.">
+              <textarea name="description" defaultValue={route?.description ?? ''} rows={3} className="adm-input resize-y" />
             </Field>
             <Field label="Джерело або трек" hint="Посилання на опис, трек чи сторінку нацпарку.">
               <input name="source_url" defaultValue={route?.source_url ?? ''} className="adm-input" />
@@ -77,9 +81,23 @@ export function RouteForm({ route, settlements, created }: { route: RouteValues 
             </label>
           </div>
         </Panel>
+        <Panel title="Сторінка маршруту">
+          <div className="grid gap-5">
+            <CoverField defaultValue={route?.cover_url ?? ''} />
+            <div className="grid gap-1.5">
+              <span className="text-sm font-bold">Повний опис</span>
+              <BodyEditor defaultValue={route?.body ?? ''} />
+            </div>
+          </div>
+        </Panel>
         <div className="flex flex-wrap items-center gap-4">
           <SubmitButton>{route ? 'Зберегти маршрут' : 'Додати маршрут'}</SubmitButton>
           <ResultNote state={state} />
+          {route && Boolean(route.is_published) && (
+            <a href={`/routes/${route.slug}`} target="_blank" className="ml-auto text-sm font-medium underline hover:text-brick">
+              Відкрити на сайті
+            </a>
+          )}
         </div>
       </AdminForm>
       {route && (

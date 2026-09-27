@@ -3,6 +3,7 @@
 import { useRef, useState, useTransition } from 'react'
 import { loadFeed } from '@/app/feed-actions'
 import type { Route, Settlement } from '@/lib/db/types'
+import { ROUTE_KIND } from '@/lib/route-kind'
 import { VillageMap } from './VillageMap'
 
 export interface FeedCard {
@@ -34,13 +35,6 @@ interface Props {
   feed: FeedPage
   routes: Route[]
   texts: ExplorerTexts
-}
-
-const ROUTE_KIND: Record<Route['kind'], string> = {
-  hike: 'Піший',
-  eco_trail: 'Екостежка',
-  bike: 'Велосипедний',
-  water: 'Водний',
 }
 
 function routeMeta(r: Route): string | null {
@@ -161,15 +155,17 @@ export function Explorer({ settlements, feed, routes, texts }: Props) {
           <ul className="grid gap-x-10 min-[600px]:grid-cols-2">
             {shownRoutes.map((r) => (
               <li key={r.id} className="grid grid-cols-[1fr_auto] gap-x-5 gap-y-1 border-t-2 border-ink pt-4.5 pb-5.5">
-                <h3 className="text-[22px] font-bold">{r.title}</h3>
+                <h3 className="text-[22px] font-bold">
+                  <a href={`/routes/${r.slug}`} className="hover:text-brick">
+                    {r.title}
+                  </a>
+                </h3>
                 <span className="self-center text-sm font-bold text-brick">{ROUTE_KIND[r.kind]}</span>
                 {routeMeta(r) && <p className="col-span-full text-[15px] font-medium">{routeMeta(r)}</p>}
                 {r.description && <p className="col-span-full max-w-[48ch] text-base text-muted">{r.description}</p>}
-                {r.source_url && (
-                  <a href={r.source_url} target="_blank" rel="noopener noreferrer" className="col-span-full text-[15px] font-medium underline hover:text-brick">
-                    Докладніше про маршрут
-                  </a>
-                )}
+                <a href={`/routes/${r.slug}`} className="col-span-full text-[15px] font-medium underline hover:text-brick">
+                  Відкрити маршрут
+                </a>
               </li>
             ))}
           </ul>

@@ -7,4 +7,6 @@ export function proxy(req: NextRequest) {
   return NextResponse.next()
 }
 
-export const config = { matcher: ['/admin', '/admin/:path*'] }
+// /admin/media (uploads) is excluded: the proxy buffers request bodies up to 10 MB, videos are bigger.
+// The route handler checks the session itself.
+export const config = { matcher: ['/admin', '/admin/((?!media$).*)'] }

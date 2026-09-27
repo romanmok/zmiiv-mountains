@@ -30,6 +30,13 @@ export interface Route {
   description: string | null
   source_url: string | null
   settlement_id: number | null
+  cover_url: string | null
+}
+
+export interface RouteDetail extends Route {
+  body: string | null
+  settlement_name: string | null
+  updated_at: string
 }
 
 export interface Place {

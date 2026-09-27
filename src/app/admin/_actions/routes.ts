@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { knex } from '@/lib/knex'
 import { requireActionUser } from '@/lib/auth/session'
+import { safeUrl } from '@/lib/route-body'
 import { slugify } from '@/lib/slug'
 import type { ActionResult } from '../_ui'
 
@@ -27,6 +28,8 @@ export async function saveRoute(_prev: ActionResult, formData: FormData): Promis
   if (elevation !== null && (!Number.isInteger(elevation) || elevation < 0)) return { ok: false, error: 'Набір висоти — ціле число метрів.' }
   const sourceUrl = String(formData.get('source_url') ?? '').trim()
   if (sourceUrl && !/^https?:\/\//.test(sourceUrl)) return { ok: false, error: 'Посилання має починатися з http:// або https://.' }
+  const coverUrl = String(formData.get('cover_url') ?? '').trim()
+  if (coverUrl && !safeUrl(coverUrl)) return { ok: false, error: 'Обкладинка: завантажте фото або вставте посилання http(s).' }
 
   const slug = slugify(String(formData.get('slug') ?? '') || title)
   if (!slug) return { ok: false, error: 'Не вдалося скласти адресу з назви: вкажіть її латиницею.' }
@@ -42,22 +45,30 @@ export async function saveRoute(_prev: ActionResult, formData: FormData): Promis
     elevation_m: elevation,
     description: String(formData.get('description') ?? '').trim() || null,
     source_url: sourceUrl.slice(0, 1024) || null,
+    cover_url: coverUrl.slice(0, 1024) || null,
+    body: String(formData.get('body') ?? '').replace(/\r\n/g, '\n').trim() || null,
     is_published: formData.get('is_published') === 'on',
     sort_order: Number(formData.get('sort_order')) || 0,
   }
   let savedId = id
-  if (id) await knex('routes').where({ id }).update(data)
+  const old = id ? await knex('routes').where({ id }).first('slug') : null
+  if (id) await knex('routes').where({ id }).update({ ...data, updated_at: knex.fn.now() })
   else [savedId] = await knex('routes').insert(data)
   revalidatePath('/')
   revalidatePath('/admin/routes')
+  revalidatePath(`/routes/${slug}`)
+  if (old && old.slug !== slug) revalidatePath(`/routes/${old.slug}`)
   if (!id) redirect(`/admin/routes/${savedId}?created=1`)
   return { ok: true, message: 'Збережено.' }
 }
 
 export async function deleteRoute(formData: FormData): Promise<void> {
   await requireActionUser()
-  await knex('routes').where({ id: Number(formData.get('id')) }).del()
+  const id = Number(formData.get('id'))
+  const row = await knex('routes').where({ id }).first('slug')
+  await knex('routes').where({ id }).del()
   revalidatePath('/')
+  if (row) revalidatePath(`/routes/${row.slug}`)
   redirect('/admin/routes')
 }
 

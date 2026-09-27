@@ -13,3 +13,4 @@ out/
 next-env.d.ts
 coverage/
 tsconfig.tsbuildinfo
+uploads/
