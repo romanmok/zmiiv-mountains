@@ -11,7 +11,7 @@ import { DEFAULT_NOISE, DEFAULT_SAFETY } from '../src/lib/collectors/filters'
 // Map coordinates are in the SVG viewBox 0 0 560 446 of public/map/zmiiv-base.svg (real OSM positions, see VillageMap).
 // Koropove sits on Korobiv Khutir: no «Коропове» near Zmiiv in OSM.
 const SETTLEMENTS = [
-  { slug: 'zmiiv', name: 'Зміїв', kind: 'city', map_x: 198, map_y: 62, label_x: 218, label_y: 67, keywords: 'зміїв,змієв,змиев' },
+  { slug: 'zmiiv', name: 'Зміїв', kind: 'city', map_x: 204, map_y: 143, label_x: 140, label_y: 120, keywords: 'зміїв,змієв,змиев' },
   { slug: 'haidary', name: 'Гайдари', kind: 'village', map_x: 102, map_y: 264, label_x: 118, label_y: 269, keywords: 'гайдар' },
   { slug: 'koropove', name: 'Коропове', kind: 'village', map_x: 171, map_y: 366, label_x: 187, label_y: 371, keywords: 'коропов' },
   { slug: 'zadonetske', name: 'Задонецьке', kind: 'village', map_x: 182, map_y: 222, label_x: 198, label_y: 227, keywords: 'задонецьк' },
