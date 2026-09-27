@@ -9,11 +9,10 @@ import { knex } from '../src/lib/knex'
 import { DEFAULT_NOISE, DEFAULT_SAFETY } from '../src/lib/collectors/filters'
 
 // Map coordinates are in the SVG viewBox 0 0 560 446 of public/map/zmiiv-base.svg (real OSM positions, see VillageMap).
-// Koropove sits on Korobiv Khutir: no «Коропове» near Zmiiv in OSM.
 const SETTLEMENTS = [
   { slug: 'zmiiv', name: 'Зміїв', kind: 'city', map_x: 204, map_y: 143, label_x: 140, label_y: 120, keywords: 'зміїв,змієв,змиев' },
   { slug: 'haidary', name: 'Гайдари', kind: 'village', map_x: 102, map_y: 264, label_x: 118, label_y: 269, keywords: 'гайдар' },
-  { slug: 'koropove', name: 'Коропове', kind: 'village', map_x: 171, map_y: 366, label_x: 187, label_y: 371, keywords: 'коропов' },
+  { slug: 'korobiv-khutir', name: 'Коробів Хутір', kind: 'village', map_x: 171, map_y: 366, label_x: 187, label_y: 371, keywords: 'коробів,коробов' },
   { slug: 'zadonetske', name: 'Задонецьке', kind: 'village', map_x: 182, map_y: 222, label_x: 198, label_y: 227, keywords: 'задонецьк' },
   { slug: 'lyman', name: 'Лиман', kind: 'village', map_x: 381, map_y: 353, label_x: 361, label_y: 381, keywords: 'лиман' },
   { slug: 'slobozhanske', name: 'Слобожанське', kind: 'village', map_x: 480, map_y: 341, label_x: 430, label_y: 325, keywords: 'слобожанське,слобожанському,слобожанського,слобожанское' },
@@ -44,7 +43,7 @@ const SOURCES: SourceSeed[] = [
 const DEMO_ITEMS = [
   { source: 'Зміївська міська рада', settlement: 'zmiiv', title: 'Графік особистого прийому громадян на жовтень', hoursAgo: 2 },
   { source: 'Вісті Зміївщини', settlement: 'zadonetske', title: 'Відремонтували зупинку біля школи', hoursAgo: 4 },
-  { source: 'Подслушано Змиёв', settlement: 'koropove', title: 'Екскурсія до городища: збір у суботу', hoursAgo: 7 },
+  { source: 'Подслушано Змиёв', settlement: 'korobiv-khutir', title: 'Екскурсія до городища: збір у суботу', hoursAgo: 7 },
   { source: 'zmiiv.com.ua', settlement: 'lyman', title: 'Бази відпочинку завершують сезон', hoursAgo: 26 },
   { source: 'Медіа-Зміїв', settlement: 'zmiiv', title: 'Сюжет: як готуються до опалювального сезону', hoursAgo: 30 },
   { source: 'НПП «Гомільшанські ліси»', settlement: 'haidary', title: 'Осінні екскурсії стежкою «Козача гора»', hoursAgo: 50 },
@@ -55,7 +54,7 @@ const ROUTES = [
   { slug: 'kruchi-ring', settlement: 'zmiiv', title: 'Кільце Зміївськими кручами', kind: 'hike', length_km: 11.8, elevation_m: 170, description: 'Правий берег Дінця: білі кварцові піски на схилах, сосновий бір і види на заплаву.' },
   { slug: 'kozacha-hora', settlement: 'haidary', title: 'Екостежка «Козача гора»', kind: 'eco_trail', length_km: null, elevation_m: null, description: 'Маршрут НПП «Гомільшанські ліси» крутосхилом над Дінцем.' },
   { slug: 'dubovyi-hai', settlement: 'haidary', title: 'Екостежка «Дубовий гай»', kind: 'eco_trail', length_km: null, elevation_m: null, description: 'Старий дубовий ліс нацпарку.' },
-  { slug: 'koropove-horodyshche', settlement: 'koropove', title: 'До городища над Дінцем', kind: 'hike', length_km: null, elevation_m: null, description: 'Короткий вихід до давнього поселення на високому березі.' },
+  { slug: 'korobovi-khutory-horodyshche', settlement: 'korobiv-khutir', title: 'До городища над Дінцем', kind: 'hike', length_km: null, elevation_m: null, description: 'Короткий вихід до давнього поселення на високому березі.' },
   { slug: 'lyman-lake', settlement: 'lyman', title: 'Навколо озера Лиман', kind: 'bike', length_km: null, elevation_m: null, description: 'Бази відпочинку, пляжі й лісові дороги.' },
 ]
 
