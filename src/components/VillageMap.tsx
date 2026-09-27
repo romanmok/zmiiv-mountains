@@ -19,7 +19,7 @@ export function VillageMap({ settlements, selected, onSelect }: Props) {
         <ellipse className="fill-forest" cx="140" cy="300" rx="120" ry="70" />
         <ellipse className="fill-forest" cx="430" cy="110" rx="100" ry="55" />
         <path
-          className="fill-none stroke-river"
+          className="pointer-events-none fill-none stroke-river"
           strokeWidth={14}
           strokeLinecap="round"
           d="M20 60 C120 80 160 150 230 170 S330 150 360 210 S420 330 540 360"

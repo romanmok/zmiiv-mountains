@@ -1,25 +1,15 @@
-import { Explorer, type FeedCard } from '@/components/Explorer'
+import { Explorer } from '@/components/Explorer'
 import { SerpentLine } from '@/components/SerpentLine'
-import { getFeed, getPlaces, getRoutes, getSettlements } from '@/lib/db/queries'
+import { getPlaces, getRoutes, getSettlements } from '@/lib/db/queries'
+import { getFeedPage } from '@/lib/feed'
 import { getSiteSettings } from '@/lib/settings'
-import { relativeDate } from '@/lib/time'
 
 export const dynamic = 'force-dynamic'
 
 export default async function HomePage() {
-  const [settlements, feed, routes, places, t] = await Promise.all([getSettlements(), getFeed(), getRoutes(), getPlaces(), getSiteSettings()])
+  const [settlements, feed, routes, places, t] = await Promise.all([getSettlements(), getFeedPage(0, null), getRoutes(), getPlaces(), getSiteSettings()])
   const contact = t.footer_contact
   const contactHref = contact.startsWith('@') ? `https://t.me/${contact.slice(1)}` : contact.includes('@') ? `mailto:${contact}` : contact
-  const now = new Date()
-  const cards: FeedCard[] = feed.map((i) => ({
-    id: i.id,
-    title: i.title,
-    url: i.url,
-    settlementId: i.settlement_id,
-    sourceName: i.source_name,
-    dateLabel: relativeDate(i.published_at, now),
-    isDemo: i.is_demo,
-  }))
 
   return (
     <div className="relative">
@@ -42,7 +32,7 @@ export default async function HomePage() {
         <main className="mx-auto max-w-[1160px] px-5">
           <Explorer
             settlements={settlements}
-            feed={cards}
+            feed={feed}
             routes={routes}
             texts={{
               heroTitle: t.hero_title,

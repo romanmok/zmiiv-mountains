@@ -7,10 +7,12 @@ export async function getSettlements(): Promise<Settlement[]> {
     .orderBy('sort_order')
 }
 
-export async function getFeed(limit = 60): Promise<FeedItem[]> {
-  const rows = await knex('items as i')
+export async function getFeed({ limit = 10, offset = 0, settlementId = null }: { limit?: number; offset?: number; settlementId?: number | null } = {}): Promise<FeedItem[]> {
+  const q = knex('items as i')
     .join('sources as s', 's.id', 'i.source_id')
     .where('i.status', 'published')
+  if (settlementId) q.where('i.settlement_id', settlementId)
+  const rows = await q
     .select(
       'i.id',
       'i.title',
@@ -24,8 +26,11 @@ export async function getFeed(limit = 60): Promise<FeedItem[]> {
     .orderBy([
       { column: 'i.pinned', order: 'desc' },
       { column: 'i.published_at', order: 'desc' },
+      // tie-breaker keeps pages stable for "load more"
+      { column: 'i.id', order: 'desc' },
     ])
     .limit(limit)
+    .offset(offset)
   return rows.map((r) => ({ ...r, is_demo: Boolean(r.is_demo) }))
 }
 

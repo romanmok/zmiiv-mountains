@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState, useTransition } from 'react'
+import { loadFeed } from '@/app/feed-actions'
 import type { Route, Settlement } from '@/lib/db/types'
 import { VillageMap } from './VillageMap'
 
@@ -22,9 +23,15 @@ export interface ExplorerTexts {
   routesTitle: string
 }
 
+interface FeedPage {
+  items: FeedCard[]
+  hasMore: boolean
+}
+
 interface Props {
   settlements: Settlement[]
-  feed: FeedCard[]
+  /** First page for "all settlements"; further pages and per-settlement pages come from loadFeed */
+  feed: FeedPage
   routes: Route[]
   texts: ExplorerTexts
 }
@@ -45,12 +52,31 @@ function routeMeta(r: Route): string | null {
 /** Map + feed + routes: selecting a settlement filters both lists. */
 export function Explorer({ settlements, feed, routes, texts }: Props) {
   const [selected, setSelected] = useState<number | null>(null)
+  const [page, setPage] = useState<FeedPage>(feed)
+  const [pending, startTransition] = useTransition()
+  // Latest selection, so a slow response for a previously clicked village never overwrites the list
+  const selectedRef = useRef<number | null>(null)
   const byId = new Map(settlements.map((s) => [s.id, s]))
   const current = selected ? byId.get(selected) : undefined
 
-  const items = selected ? feed.filter((i) => i.settlementId === selected) : feed
+  const items = page.items
   const shownRoutes = selected ? routes.filter((r) => r.settlement_id === selected) : routes
-  const hasDemo = feed.some((i) => i.isDemo)
+  const hasDemo = feed.items.some((i) => i.isDemo)
+
+  function fetchPage(settlementId: number | null, offset: number) {
+    startTransition(async () => {
+      const next = await loadFeed(offset, settlementId)
+      if (selectedRef.current !== settlementId) return
+      setPage((prev) => (offset ? { items: [...prev.items, ...next.items], hasMore: next.hasMore } : next))
+    })
+  }
+
+  function select(id: number | null) {
+    selectedRef.current = id
+    setSelected(id)
+    if (id === null) setPage(feed)
+    else fetchPage(id, 0)
+  }
 
   return (
     <>
@@ -60,7 +86,7 @@ export function Explorer({ settlements, feed, routes, texts }: Props) {
           {texts.heroLead && <p className="mt-5 max-w-[40ch] text-[19px]">{texts.heroLead}</p>}
           {texts.heroHint && <p className="mt-4 text-[15px] text-muted">{texts.heroHint}</p>}
         </div>
-        <VillageMap settlements={settlements} selected={selected} onSelect={setSelected} />
+        <VillageMap settlements={settlements} selected={selected} onSelect={select} />
       </div>
 
       <section id="feed" aria-labelledby="feed-h" className="pt-10 pb-18">
@@ -74,7 +100,7 @@ export function Explorer({ settlements, feed, routes, texts }: Props) {
                 Показано: {current.name}
                 <button
                   type="button"
-                  onClick={() => setSelected(null)}
+                  onClick={() => select(null)}
                   className="ml-1.5 cursor-pointer text-brick underline"
                 >
                   Показати всі
@@ -87,7 +113,10 @@ export function Explorer({ settlements, feed, routes, texts }: Props) {
         </div>
         {hasDemo && <p className="mb-3.5 text-[13px] text-muted">Демо-стрічка: джерела справжні, заголовки умовні.</p>}
         {items.length > 0 ? (
-          <ul className="grid gap-4 min-[600px]:grid-cols-2 min-[900px]:grid-cols-3">
+          <ul
+            aria-busy={pending}
+            className={`grid gap-4 transition-opacity min-[600px]:grid-cols-2 min-[900px]:grid-cols-3 ${pending ? 'opacity-60' : ''}`}
+          >
             {items.map((i) => {
               const place = i.settlementId ? byId.get(i.settlementId) : undefined
               return (
@@ -107,8 +136,20 @@ export function Explorer({ settlements, feed, routes, texts }: Props) {
           </ul>
         ) : (
           <p className="rounded-[18px] border-2 border-dashed border-muted p-6 text-muted">
-            Для цього села поки немає новин. Оберіть інше на мапі або покажіть усі.
+            {pending ? 'Завантажую новини…' : 'Для цього села поки немає новин. Оберіть інше на мапі або покажіть усі.'}
           </p>
+        )}
+        {page.hasMore && (
+          <div className="mt-6 flex justify-center">
+            <button
+              type="button"
+              disabled={pending}
+              onClick={() => fetchPage(selected, items.length)}
+              className="cursor-pointer rounded-full border-2 border-ink bg-white px-6 py-2.5 font-bold hover:bg-ochre disabled:cursor-wait disabled:opacity-60"
+            >
+              {pending ? 'Завантажую…' : 'Показати ще'}
+            </button>
+          </div>
         )}
       </section>
 
