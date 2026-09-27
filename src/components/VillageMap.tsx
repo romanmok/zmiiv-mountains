@@ -8,22 +8,24 @@ interface Props {
   onSelect: (id: number | null) => void
 }
 
-// TODO: replace the schematic with a detailed, beautiful map (relief of the Kruchi, forests, Donets bends)
-// — product owner priority, see documentation/po-feedback-2026-09-26.md
+// Base map = real OSM geometry (Donets course, lakes, forests) baked into public/map/zmiiv-base.svg,
+// projected to this viewBox; settlement coords in the DB use the same projection.
 export function VillageMap({ settlements, selected, onSelect }: Props) {
   const toggle = (id: number) => onSelect(selected === id ? null : id)
 
   return (
     <div className="rounded-[28px] bg-soft p-2.5">
-      <svg viewBox="0 0 560 420" role="group" aria-label="Мапа Зміїва і сіл довкола" className="block h-auto w-full">
-        <ellipse className="fill-forest" cx="140" cy="300" rx="120" ry="70" />
-        <ellipse className="fill-forest" cx="430" cy="110" rx="100" ry="55" />
-        <path
-          className="pointer-events-none fill-none stroke-river"
-          strokeWidth={14}
-          strokeLinecap="round"
-          d="M20 60 C120 80 160 150 230 170 S330 150 360 210 S420 330 540 360"
-        />
+      <svg viewBox="0 0 560 446" role="group" aria-label="Мапа Зміїва і сіл довкола" className="block h-auto w-full rounded-[20px]">
+        <image href="/map/zmiiv-base.svg" width="560" height="446" aria-hidden="true" />
+        <text
+          x="300"
+          y="215"
+          transform="rotate(-24 300 215)"
+          className="pointer-events-none fill-river-ink"
+          style={{ font: 'italic 500 12px var(--font-onest), sans-serif' }}
+        >
+          Сіверський Донець
+        </text>
         {settlements.map((s) => (
           <g
             key={s.id}
@@ -45,9 +47,6 @@ export function VillageMap({ settlements, selected, onSelect }: Props) {
             </text>
           </g>
         ))}
-        <text x="430" y="400" className="fill-muted" style={{ font: '500 12px var(--font-onest), sans-serif' }}>
-          Сіверський Донець
-        </text>
       </svg>
     </div>
   )

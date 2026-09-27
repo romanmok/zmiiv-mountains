@@ -8,14 +8,15 @@ loadEnv({ path: path.resolve(process.cwd(), '.env') })
 import { knex } from '../src/lib/knex'
 import { DEFAULT_NOISE, DEFAULT_SAFETY } from '../src/lib/collectors/filters'
 
-// Map coordinates are in the schematic SVG viewBox 0 0 560 420 (see VillageMap).
+// Map coordinates are in the SVG viewBox 0 0 560 446 of public/map/zmiiv-base.svg (real OSM positions, see VillageMap).
+// Koropove sits on Korobiv Khutir: no «Коропове» near Zmiiv in OSM.
 const SETTLEMENTS = [
-  { slug: 'zmiiv', name: 'Зміїв', kind: 'city', map_x: 260, map_y: 200, label_x: 282, label_y: 206, keywords: 'зміїв,змієв,змиев' },
-  { slug: 'haidary', name: 'Гайдари', kind: 'village', map_x: 90, map_y: 95, label_x: 108, label_y: 100, keywords: 'гайдар' },
-  { slug: 'koropove', name: 'Коропове', kind: 'village', map_x: 175, map_y: 140, label_x: 130, label_y: 125, keywords: 'коропов' },
-  { slug: 'zadonetske', name: 'Задонецьке', kind: 'village', map_x: 230, map_y: 280, label_x: 248, label_y: 286, keywords: 'задонецьк' },
-  { slug: 'lyman', name: 'Лиман', kind: 'village', map_x: 420, map_y: 250, label_x: 438, label_y: 256, keywords: 'лиман' },
-  { slug: 'slobozhanske', name: 'Слобожанське', kind: 'village', map_x: 400, map_y: 345, label_x: 300, label_y: 372, keywords: 'слобожанське,слобожанському,слобожанського,слобожанское' },
+  { slug: 'zmiiv', name: 'Зміїв', kind: 'city', map_x: 198, map_y: 62, label_x: 218, label_y: 67, keywords: 'зміїв,змієв,змиев' },
+  { slug: 'haidary', name: 'Гайдари', kind: 'village', map_x: 102, map_y: 264, label_x: 118, label_y: 269, keywords: 'гайдар' },
+  { slug: 'koropove', name: 'Коропове', kind: 'village', map_x: 171, map_y: 366, label_x: 187, label_y: 371, keywords: 'коропов' },
+  { slug: 'zadonetske', name: 'Задонецьке', kind: 'village', map_x: 182, map_y: 222, label_x: 198, label_y: 227, keywords: 'задонецьк' },
+  { slug: 'lyman', name: 'Лиман', kind: 'village', map_x: 381, map_y: 353, label_x: 361, label_y: 381, keywords: 'лиман' },
+  { slug: 'slobozhanske', name: 'Слобожанське', kind: 'village', map_x: 480, map_y: 341, label_x: 430, label_y: 325, keywords: 'слобожанське,слобожанському,слобожанського,слобожанское' },
 ]
 
 type SourceSeed = {

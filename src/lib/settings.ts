@@ -101,7 +101,7 @@ export const SETTING_GROUPS: SettingGroup[] = [
       {
         key: 'footer_note',
         label: 'Примітка про джерела',
-        default: 'Новини — заголовки й посилання на джерела. Мапа схематична. © учасники OpenStreetMap.',
+        default: 'Новини — заголовки й посилання на джерела. Мапа: © учасники OpenStreetMap.',
         multiline: true,
       },
       { key: 'footer_contact', label: 'Контакт для новин (email або @telegram, можна порожнім)', default: '' },
