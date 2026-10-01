@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Onest, Unbounded } from 'next/font/google'
 import { getSiteSettings } from '@/lib/settings'
 import './globals.css'
@@ -18,6 +18,10 @@ const onest = Onest({
 })
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+
+// Site has one light palette. Samsung Internet ignores 'only light' and force-darkens pages that don't
+// declare dark support, so meta claims 'light dark' while globals.css pins color-scheme to light
+export const viewport: Viewport = { colorScheme: 'light dark', themeColor: '#fff8ec' }
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getSiteSettings()

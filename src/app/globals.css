@@ -18,6 +18,19 @@
 }
 
 @layer base {
+  :root {
+    color-scheme: only light;
+  }
+  /* Same light palette in dark mode: marks the site as dark-ready for Samsung Internet (see layout.tsx) */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: only light;
+    }
+    body {
+      background: var(--color-paper);
+      color: var(--color-ink);
+    }
+  }
   body {
     background: var(--color-paper);
     color: var(--color-ink);
